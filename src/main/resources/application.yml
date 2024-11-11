@@ -11,3 +11,4 @@ spring:
     hibernate:
       show-sql: true
       ddl-auto: update
+

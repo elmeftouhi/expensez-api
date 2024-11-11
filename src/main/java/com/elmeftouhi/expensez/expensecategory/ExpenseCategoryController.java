@@ -12,9 +12,11 @@ import java.util.List;
 public class ExpenseCategoryController {
 
     private final ExpenseCategoryRepository expenseCategoryRepository;
+    private final ExpenseCategoryService expenseCategoryService;
 
-    public ExpenseCategoryController(ExpenseCategoryRepository expenseCategoryRepository) {
+    public ExpenseCategoryController(ExpenseCategoryRepository expenseCategoryRepository, ExpenseCategoryService expenseCategoryService) {
         this.expenseCategoryRepository = expenseCategoryRepository;
+        this.expenseCategoryService = expenseCategoryService;
     }
 
     @GetMapping
@@ -39,6 +41,12 @@ public class ExpenseCategoryController {
                 expenseCategoryResource.status(),
                 expenseCategoryResource.level()));
         return ResponseEntity.status(HttpStatus.CREATED).body("Expense Category Created Successfully");
+    }
+
+    @PutMapping("/level/{id}")
+    void updateLevel(@RequestParam(required = true) ExpenseCategoryLevelDirection direction,
+                               @PathVariable Long id){
+        expenseCategoryService.updateLevel(id, direction);
     }
 
 }

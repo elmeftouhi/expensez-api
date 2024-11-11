@@ -108,4 +108,15 @@ public class ExpenseCategory {
     public void setUpdated_by(long updated_by) {
         this.updated_by = updated_by;
     }
+
+    public void incrementLevel(){
+        this.level++;
+    }
+
+    public void decrementLevel(){
+        if (this.level == 1)
+            this.level = 1;
+        else
+            this.level--;
+    }
 }
