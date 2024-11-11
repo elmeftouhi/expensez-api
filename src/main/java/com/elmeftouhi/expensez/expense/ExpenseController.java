@@ -2,10 +2,10 @@ package com.elmeftouhi.expensez.expense;
 
 import com.elmeftouhi.expensez.expensecategory.ExpenseCategory;
 import com.elmeftouhi.expensez.expensecategory.ExpenseCategoryRepository;
-import org.hibernate.query.QueryParameter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("expense")
@@ -61,5 +61,17 @@ public class ExpenseController {
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id){
         expenseService.deleteExpense(id);
+    }
+
+    @GetMapping("/{id}")
+    Optional<Expense> findById(@PathVariable Long id){
+        return expenseRepository.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    void update(
+            @PathVariable Long id,
+            @RequestBody ExpenseResource expenseResource){
+        expenseService.update(id, expenseResource);
     }
 }

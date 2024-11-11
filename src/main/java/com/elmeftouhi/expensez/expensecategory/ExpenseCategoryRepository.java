@@ -13,5 +13,9 @@ public interface ExpenseCategoryRepository extends ListCrudRepository<ExpenseCat
             """)
     public List<ExpenseCategory> findAllOrderByLevel();
 
-    public List<ExpenseCategory> findAllByOrderByCreatedAtDesc();
+    public List<ExpenseCategory> findAllByDeletedAtIsNullOrderByCreatedAtDesc();
+
+    public List<ExpenseCategory> findAllByDeletedAtIsNotNullOrderByLevel();
+
+    List<ExpenseCategory> findAllByDeletedAtIsNullOrderByLevel();
 }

@@ -2,6 +2,7 @@ package com.elmeftouhi.expensez.expensecategory;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -57,6 +58,28 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
 
             }
 
+        }
+    }
+
+    @Override
+    public void update(Long id, ExpenseCategoryResource expenseCategoryResource) {
+        Optional<ExpenseCategory> expenseCategory = expenseCategoryRepository.findById(id);
+        if (expenseCategory.isPresent()){
+            expenseCategory.get().setName(expenseCategoryResource.name() == null? expenseCategory.get().getName() : expenseCategoryResource.name() );
+            expenseCategory.get().setExpenseCategoryStatus(expenseCategoryResource.status() == null? expenseCategory.get().getExpenseCategoryStatus() : expenseCategoryResource.status() );
+            expenseCategory.get().setUpdated_at(LocalDateTime.now());
+            expenseCategory.get().setUpdated_by(69);
+            expenseCategoryRepository.save(expenseCategory.get());
+        }
+    }
+
+    @Override
+    public void delete(Long id) {
+        Optional<ExpenseCategory> expenseCategory = expenseCategoryRepository.findById(id);
+        if (expenseCategory.isPresent()){
+            expenseCategory.get().setDeletedAt(LocalDateTime.now());
+            expenseCategory.get().setDeletedBy(69);
+            expenseCategoryRepository.save(expenseCategory.get());
         }
     }
 }

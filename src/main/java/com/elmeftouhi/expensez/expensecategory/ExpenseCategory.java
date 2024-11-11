@@ -26,10 +26,16 @@ public class ExpenseCategory {
 
     private long updated_by;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "deleted_by")
+    private long deletedBy;
+
     public ExpenseCategory() {
     }
 
-    public ExpenseCategory(String name, Integer level, ExpenseCategoryStatus status, LocalDateTime createdAt, long created_by, LocalDateTime updated_at, long updated_by) {
+    public ExpenseCategory(String name, Integer level, ExpenseCategoryStatus status, LocalDateTime createdAt, long created_by, LocalDateTime updated_at, long updated_by, LocalDateTime deletedAt, Long deletedBy) {
         this.name = name;
         this.createdAt = createdAt;
         this.created_by = created_by;
@@ -37,6 +43,8 @@ public class ExpenseCategory {
         this.updated_by = updated_by;
         this.level = level;
         this.status = status;
+        this.deletedAt = deletedAt;
+        this.deletedBy = deletedBy;
     }
 
     public ExpenseCategory(String name, ExpenseCategoryStatus status){
@@ -102,6 +110,22 @@ public class ExpenseCategory {
 
     public long getUpdated_by() {
         return updated_by;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public long getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(long deletedBy) {
+        this.deletedBy = deletedBy;
     }
 
     public void setUpdated_by(long updated_by) {
