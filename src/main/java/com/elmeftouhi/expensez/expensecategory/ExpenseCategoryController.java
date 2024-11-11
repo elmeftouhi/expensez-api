@@ -36,10 +36,13 @@ public class ExpenseCategoryController {
 
     @PostMapping()
     ResponseEntity create(@RequestBody ExpenseCategoryResource expenseCategoryResource){
-        expenseCategoryRepository.save(new ExpenseCategory(
+        ExpenseCategory newCategory = new ExpenseCategory(
                 expenseCategoryResource.name(),
-                expenseCategoryResource.status(),
-                expenseCategoryResource.level()));
+                expenseCategoryResource.status());
+
+        newCategory.setLevel(expenseCategoryRepository.findAll().size() + 1);
+
+        expenseCategoryRepository.save(newCategory);
         return ResponseEntity.status(HttpStatus.CREATED).body("Expense Category Created Successfully");
     }
 

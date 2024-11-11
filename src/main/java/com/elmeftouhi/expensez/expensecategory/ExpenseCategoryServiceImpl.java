@@ -25,14 +25,14 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
             if (totalElements > 1){
                 // element is last
                 if ((currentIndex + 1) == totalElements && direction.name().equals(ExpenseCategoryLevelDirection.UP.name())) {
-                    allCategories.get(currentIndex).setLevel(currentIndex);
-                    allCategories.get(currentIndex - 1).setLevel(currentIndex + 1);
+                    allCategories.get(currentIndex).decrementLevel();
+                    allCategories.get(currentIndex - 1).incrementLevel();
                 }
 
                 // element is first
                 if ( (currentIndex + 1) == 1  && direction.name().equals(ExpenseCategoryLevelDirection.DOWN.name()) ){
-                    allCategories.get(currentIndex).setLevel(currentIndex + 2);
-                    allCategories.get(currentIndex + 1).setLevel(currentIndex + 1);
+                    allCategories.get(currentIndex).incrementLevel();
+                    allCategories.get(currentIndex + 1).decrementLevel();
                 }
 
                 // element is middle and Down
@@ -40,8 +40,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
                         (currentIndex + 1) < totalElements &&
                         direction.name().equals(ExpenseCategoryLevelDirection.DOWN.name())
                 ){
-                    allCategories.get(currentIndex).setLevel(currentIndex + 1);
-                    allCategories.get(currentIndex + 1).setLevel(currentIndex - 1);
+                    allCategories.get(currentIndex).incrementLevel();
+                    allCategories.get(currentIndex + 1).decrementLevel();
                 }
 
                 // element is middle and Up
@@ -49,8 +49,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
                         (currentIndex + 1) < totalElements &&
                         direction.name().equals(ExpenseCategoryLevelDirection.UP.name())
                 ){
-                    allCategories.get(currentIndex).setLevel(currentIndex );
-                    allCategories.get(currentIndex - 1).setLevel(currentIndex + 1);
+                    allCategories.get(currentIndex).decrementLevel();
+                    allCategories.get(currentIndex - 1).incrementLevel();
                 }
 
                 expenseCategoryRepository.saveAll(allCategories);

@@ -39,9 +39,8 @@ public class ExpenseCategory {
         this.status = status;
     }
 
-    public ExpenseCategory(String name, ExpenseCategoryStatus status, Integer level){
+    public ExpenseCategory(String name, ExpenseCategoryStatus status){
         this.name = name;
-        this.level = level;
         this.status = status;
     }
 
