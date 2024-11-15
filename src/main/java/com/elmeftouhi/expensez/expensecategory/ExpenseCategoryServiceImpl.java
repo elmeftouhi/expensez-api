@@ -1,5 +1,6 @@
 package com.elmeftouhi.expensez.expensecategory;
 
+import com.elmeftouhi.expensez.exception.ExpenseCategoryNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -58,7 +59,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
 
             }
 
-        }
+        }else
+            throw new ExpenseCategoryNotFoundException("Expense Category with id : " + id + " not found");
     }
 
     @Override
@@ -70,16 +72,31 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
             expenseCategory.get().setUpdated_at(LocalDateTime.now());
             expenseCategory.get().setUpdated_by(69);
             expenseCategoryRepository.save(expenseCategory.get());
-        }
+        }else
+            throw new ExpenseCategoryNotFoundException("Expense Category with id : " + id + " not found");
     }
 
     @Override
-    public void delete(Long id) {
-        Optional<ExpenseCategory> expenseCategory = expenseCategoryRepository.findById(id);
+    public void delete(Long id, Boolean hard_delete) {
+        Optional<ExpenseCategory> expenseCategory = expenseCategoryRepository.findExpenseCategoryById(id);
         if (expenseCategory.isPresent()){
-            expenseCategory.get().setDeletedAt(LocalDateTime.now());
-            expenseCategory.get().setDeletedBy(69);
-            expenseCategoryRepository.save(expenseCategory.get());
-        }
+            if (hard_delete){
+                expenseCategoryRepository.delete(expenseCategory.get());
+            }else {
+                expenseCategory.get().setDeletedAt(LocalDateTime.now());
+                expenseCategory.get().setDeletedBy(69);
+                expenseCategoryRepository.save(expenseCategory.get());
+            }
+        }else
+            throw new ExpenseCategoryNotFoundException("Expense Category with id : " + id + " not found");
+    }
+
+    @Override
+    public ExpenseCategory findExpenseCategoryById(Long id) {
+        Optional<ExpenseCategory> expenseCategory = expenseCategoryRepository.findExpenseCategoryById(id);
+        if (expenseCategory.isPresent()){
+            return expenseCategory.get();
+        }else
+            throw new ExpenseCategoryNotFoundException("Expense Category with id : " + id + " not found");
     }
 }

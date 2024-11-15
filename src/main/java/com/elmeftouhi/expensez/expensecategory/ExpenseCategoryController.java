@@ -2,14 +2,13 @@ package com.elmeftouhi.expensez.expensecategory;
 
 import com.elmeftouhi.expensez.expense.Expense;
 import com.elmeftouhi.expensez.expense.ExpenseRepository;
-import com.elmeftouhi.expensez.expense.ExpenseResource;
 import com.elmeftouhi.expensez.expense.ExpenseResponse;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/expense-category")
@@ -54,7 +53,9 @@ public class ExpenseCategoryController {
     }
 
     @PostMapping()
-    ResponseEntity create(@RequestBody ExpenseCategoryResource expenseCategoryResource){
+    ResponseEntity create(
+            @RequestBody ExpenseCategoryResource expenseCategoryResource
+    ){
         ExpenseCategory newCategory = new ExpenseCategory(
                 expenseCategoryResource.name(),
                 expenseCategoryResource.status());
@@ -66,8 +67,10 @@ public class ExpenseCategoryController {
     }
 
     @PutMapping("/level/{id}")
-    void updateLevel(@RequestParam(required = true) ExpenseCategoryLevelDirection direction,
-                               @PathVariable Long id){
+    void updateLevel(
+            @RequestParam(required = true) ExpenseCategoryLevelDirection direction,
+            @PathVariable Long id
+    ){
         expenseCategoryService.updateLevel(id, direction);
     }
 
@@ -79,11 +82,24 @@ public class ExpenseCategoryController {
         expenseCategoryService.update(id, expenseCategoryResource);
     }
 
-    @DeleteMapping("/{id}")
-    void delete(
+    @GetMapping("/{id}")
+    ResponseEntity<ExpenseCategoryResponse> getById(
             @PathVariable Long id
     ){
-        expenseCategoryService.delete(id);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                    new ExpenseCategoryResponse(expenseCategoryService.findExpenseCategoryById(id))
+            );
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            @RequestParam(required = false, defaultValue = "false") Boolean hard_delete
+    ){
+        expenseCategoryService.delete(id, hard_delete);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

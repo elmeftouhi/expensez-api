@@ -8,7 +8,10 @@ spring:
     username: user
     password: user_password
   jpa:
-    hibernate:
-      show-sql: true
-      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        ddl-auto: update
 
