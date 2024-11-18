@@ -17,7 +17,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
 
     @Override
     public void updateLevel(Long id, ExpenseCategoryLevelDirection direction) {
-        Optional<ExpenseCategory> expenseCategory = expenseCategoryRepository.findById(id);
+        Optional<ExpenseCategory> expenseCategory = expenseCategoryRepository.findExpenseCategoryById(id);
         if (expenseCategory.isPresent()){
 
             var allCategories = expenseCategoryRepository.findAllOrderByLevel();

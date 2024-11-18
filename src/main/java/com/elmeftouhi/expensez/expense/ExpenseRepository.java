@@ -9,11 +9,12 @@ import java.util.List;
 
 @Repository
 public interface ExpenseRepository extends ListCrudRepository<Expense, Long> {
-    List<Expense> findAllByDeletedAtIsNull();
 
-    List<Expense> findAllByDeletedAtIsNotNull();
+    List<Expense> findAllByDeletedAtIsNotNullOrderByDateExpenseDesc();
 
     List<Expense> findAllByDeletedAtIsNullOrderByDateExpenseDesc();
+
+    List<Expense> findAllByOrderByDateExpenseDesc();
 
     List<Expense> findByExpenseCategory(ExpenseCategory expenseCategory);
 }
