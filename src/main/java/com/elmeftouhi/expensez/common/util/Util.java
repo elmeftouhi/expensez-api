@@ -15,9 +15,10 @@ public class Util {
         sdf.setLenient(false);
         try {
             sdf.parse(strDate);
+            return true;
         } catch (ParseException e) {
+            System.out.println(strDate+" is Invalid Date format");
             return false;
         }
-        return true;
     }
 }

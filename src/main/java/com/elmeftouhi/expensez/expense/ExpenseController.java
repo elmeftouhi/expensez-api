@@ -4,7 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -70,5 +72,19 @@ public class ExpenseController {
             @RequestBody ExpenseResource expenseResource){
         expenseService.update(id, expenseResource);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/report")
+    ReportResponse getReport(
+            @RequestParam(required = false, name = "year") String year,
+            @RequestParam(required = false, name = "month") String month,
+            @RequestParam(required = false, name = "expense_category_id") Long expenseCategoryId
+    ){
+        Map<Integer, Double> data = new HashMap<>();
+        for (int i = 1; i <= 12; i++){
+            data.put(i, Math.random() * 1000);
+        }
+        return new ReportResponse(data);
+
     }
 }

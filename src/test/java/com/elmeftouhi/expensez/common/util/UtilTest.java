@@ -2,6 +2,8 @@ package com.elmeftouhi.expensez.common.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class UtilTest {
@@ -14,8 +16,8 @@ class UtilTest {
 
     @Test
     public void util_checkDateIsValid_whenWrongFormat(){
-        String strDate = "2024-11,18,2024";
-        assert( Util.isValidDate(strDate) ).equals(true);
+        String strDate = "2024-14-18";
+        assert( Util.isValidDate(strDate) ).equals(false);
     }
 
 }

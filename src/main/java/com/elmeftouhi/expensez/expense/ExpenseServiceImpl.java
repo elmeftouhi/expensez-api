@@ -1,12 +1,15 @@
 package com.elmeftouhi.expensez.expense;
 
+import com.elmeftouhi.expensez.common.util.Util;
 import com.elmeftouhi.expensez.exception.ExpenseCategoryNotFoundException;
 import com.elmeftouhi.expensez.exception.ExpenseNotFoundException;
 import com.elmeftouhi.expensez.expensecategory.ExpenseCategory;
 import com.elmeftouhi.expensez.expensecategory.ExpenseCategoryRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,13 +37,24 @@ public class ExpenseServiceImpl implements ExpenseService{
     ) {
 
         List<Expense> expenses = List.of();
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+        // check FROM
+        if (from.isBlank()){
+            from =  LocalDate.now().getYear() + "-" + LocalDate.now().getMonthValue() + "-01";
+        }
+        Util.isValidDate(from);
+
+        // check TO
+        if (to.isBlank()){
+            to = LocalDate.now().getYear() + "-" + LocalDate.now().getMonthValue() + "-" + LocalDate.now().getDayOfMonth();
+        }
         if(only_deleted){
-            expenses = expenseRepository.findAllByDeletedAtIsNotNullOrderByDateExpenseDesc();
+            expenses = expenseRepository.findOnlyDeletedBetweenDates(LocalDate.parse(from), LocalDate.parse(to));
         } else if (include_deleted) {
-            expenses = expenseRepository.findAllByOrderByDateExpenseDesc();
+            expenses = expenseRepository.findAllByOrderByDateExpenseDesc(LocalDate.parse(from), LocalDate.parse(to));
         }else {
-            expenses = expenseRepository.findAllByDeletedAtIsNullOrderByDateExpenseDesc();
+            expenses = expenseRepository.findAllBetweenDates(LocalDate.parse(from), LocalDate.parse(to));
         }
 
 //        if (year != null){
