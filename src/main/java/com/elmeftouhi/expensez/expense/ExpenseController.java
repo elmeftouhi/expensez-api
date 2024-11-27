@@ -1,13 +1,16 @@
 package com.elmeftouhi.expensez.expense;
 
+import com.elmeftouhi.expensez.exception.ExpenseNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("expense")
@@ -23,18 +26,16 @@ public class ExpenseController {
 
     @GetMapping
     List<ExpenseResponse> getAll(
-            @RequestParam(required = false, defaultValue = "false") Boolean include_deleted,
-            @RequestParam(required = false, defaultValue = "false") Boolean only_deleted,
-            @RequestParam(required = false, defaultValue = "") String order_by,
+            @RequestParam(required = false, defaultValue = "false", name = "include_deleted") Boolean includeDeleted,
+            @RequestParam(required = false, defaultValue = "false", name = "only_deleted") Boolean onlyDeleted,
             @RequestParam(required = false, defaultValue = "") String description,
             @RequestParam(required = false, defaultValue = "") Long expenseCategoryId,
             @RequestParam(required = false, defaultValue = "") String from,
             @RequestParam(required = false, defaultValue = "") String to
     ){
         return expenseService.getAll(
-                include_deleted,
-                order_by,
-                only_deleted,
+                includeDeleted,
+                onlyDeleted,
                 description,
                 expenseCategoryId,
                 from,
@@ -60,10 +61,10 @@ public class ExpenseController {
     }
 
     @GetMapping("/{id}")
-    Optional<Expense> findById(
+    Expense findById(
             @PathVariable Long id
     ){
-        return expenseRepository.findById(id);
+        return expenseRepository.findById(id).orElseThrow(ExpenseNotFoundException::new);
     }
 
     @PutMapping("/{id}")
@@ -75,16 +76,12 @@ public class ExpenseController {
     }
 
     @GetMapping("/report")
-    ReportResponse getReport(
+    public ReportResponse getReport(
             @RequestParam(required = false, name = "year") String year,
             @RequestParam(required = false, name = "month") String month,
             @RequestParam(required = false, name = "expense_category_id") Long expenseCategoryId
     ){
-        Map<Integer, Double> data = new HashMap<>();
-        for (int i = 1; i <= 12; i++){
-            data.put(i, Math.random() * 1000);
-        }
-        return new ReportResponse(data);
+        return expenseService.getTotalByMonthForAYear(year);
 
     }
 }

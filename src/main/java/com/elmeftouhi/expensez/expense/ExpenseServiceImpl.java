@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService{
@@ -27,17 +28,15 @@ public class ExpenseServiceImpl implements ExpenseService{
 
     @Override
     public List<ExpenseResponse> getAll(
-            Boolean include_deleted,
-            String order_by,
-            Boolean only_deleted,
+            Boolean includeDeleted,
+            Boolean onlyDeleted,
             String description,
             Long expenseCategoryId,
             String from,
             String to
     ) {
 
-        List<Expense> expenses = List.of();
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<Expense> expenses;
 
         // check FROM
         if (from.isBlank()){
@@ -49,27 +48,16 @@ public class ExpenseServiceImpl implements ExpenseService{
         if (to.isBlank()){
             to = LocalDate.now().getYear() + "-" + LocalDate.now().getMonthValue() + "-" + LocalDate.now().getDayOfMonth();
         }
-        if(only_deleted){
+        Util.isValidDate(to);
+
+
+        if(Boolean.TRUE.equals(onlyDeleted)){
             expenses = expenseRepository.findOnlyDeletedBetweenDates(LocalDate.parse(from), LocalDate.parse(to));
-        } else if (include_deleted) {
+        } else if (Boolean.TRUE.equals(includeDeleted)) {
             expenses = expenseRepository.findAllByOrderByDateExpenseDesc(LocalDate.parse(from), LocalDate.parse(to));
         }else {
             expenses = expenseRepository.findAllBetweenDates(LocalDate.parse(from), LocalDate.parse(to));
         }
-
-//        if (year != null){
-//            expenses = expenses
-//                    .stream()
-//                    .filter(e -> e.getDateExpense().getYear() == year)
-//                    .toList();
-//        }
-//
-//        if (month != null){
-//            expenses = expenses
-//                    .stream()
-//                    .filter(e -> e.getDateExpense().getMonthValue() == month)
-//                    .toList();
-//        }
 
         if (description != null){
             expenses = expenses
@@ -143,6 +131,20 @@ public class ExpenseServiceImpl implements ExpenseService{
                     category.get()
             )
         );
+    }
+
+    @Override
+    public ReportResponse getTotalByMonthForAYear(String year) {
+        if (year == null){
+            year = String.valueOf(LocalDate.now().getYear());
+        }
+        List<Object[]> expenses = expenseRepository.getMonthlyExpensesByYear(year);
+
+        return new ReportResponse(expenses.stream()
+                .collect(Collectors.toMap(
+                        row -> ((Number) row[0]).intValue(),   // Month
+                        row -> ((Number) row[1]).doubleValue() // Total Amount
+                )));
     }
 
 }

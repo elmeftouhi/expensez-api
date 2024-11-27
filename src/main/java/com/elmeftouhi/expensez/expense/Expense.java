@@ -2,7 +2,9 @@ package com.elmeftouhi.expensez.expense;
 
 import com.elmeftouhi.expensez.expensecategory.ExpenseCategory;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
 
+import java.lang.annotation.ElementType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,7 +20,7 @@ public class Expense {
 
     private String description;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "category_id", nullable = false)
     private ExpenseCategory expenseCategory;
 

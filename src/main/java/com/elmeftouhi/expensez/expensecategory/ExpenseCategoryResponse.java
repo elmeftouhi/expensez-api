@@ -1,6 +1,5 @@
 package com.elmeftouhi.expensez.expensecategory;
 
-import com.elmeftouhi.expensez.expense.ExpenseResource;
 import com.elmeftouhi.expensez.expense.ExpenseResponse;
 
 import java.time.LocalDateTime;

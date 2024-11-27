@@ -1,14 +1,11 @@
 package com.elmeftouhi.expensez.expensecategory;
 
-import com.elmeftouhi.expensez.expense.Expense;
 import com.elmeftouhi.expensez.expense.ExpenseRepository;
-import com.elmeftouhi.expensez.expense.ExpenseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/expense-category")
@@ -16,36 +13,25 @@ public class ExpenseCategoryController {
 
     private final ExpenseCategoryRepository expenseCategoryRepository;
     private final ExpenseCategoryService expenseCategoryService;
-    private final ExpenseRepository expenseRepository;
 
     public ExpenseCategoryController(ExpenseCategoryRepository expenseCategoryRepository, ExpenseCategoryService expenseCategoryService, ExpenseRepository expenseRepository) {
         this.expenseCategoryRepository = expenseCategoryRepository;
         this.expenseCategoryService = expenseCategoryService;
-        this.expenseRepository = expenseRepository;
     }
 
     @GetMapping
     List<ExpenseCategoryResponse> getAllExpenseCategories(
-            @RequestParam(required = false, defaultValue = "level") String order_by,
-            @RequestParam(required = false, defaultValue = "false") Boolean include_deleted,
-            @RequestParam(required = false, defaultValue = "false") Boolean only_deleted,
-            @RequestParam(required = false, defaultValue = "false") Boolean include_expenses
+            @RequestParam(required = false, defaultValue = "level", name = "order_by") String orderBy,
+            @RequestParam(required = false, defaultValue = "false", name = "include_deleted") Boolean includeDeleted,
+            @RequestParam(required = false, defaultValue = "false", name = "only_deleted") Boolean onlyDeleted
     ){
         List<ExpenseCategory> categories = expenseCategoryRepository.findAllByDeletedAtIsNullOrderByLevel() ;
         
-        if(include_deleted)
+        if(Boolean.TRUE.equals(includeDeleted))
             categories = expenseCategoryRepository.findAllOrderByLevel();
         
-        if(only_deleted)
+        if(Boolean.TRUE.equals(onlyDeleted))
             categories = expenseCategoryRepository.findAllByDeletedAtIsNotNullOrderByLevel();
-
-        if (include_expenses){
-            return categories.stream()
-                    .map(category -> {
-                        List<Expense> expenses = expenseRepository.findByExpenseCategory(category);
-                        return new ExpenseCategoryResponse(category, expenses.stream().map(ExpenseResponse::new).toList());
-                    }).toList();
-        }
 
         return categories.stream()
                 .map(ExpenseCategoryResponse::new)
@@ -86,19 +72,20 @@ public class ExpenseCategoryController {
     ResponseEntity<ExpenseCategoryResponse> getById(
             @PathVariable Long id
     ){
+        ExpenseCategory expenseCategory = expenseCategoryService.findExpenseCategoryById(id);
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(
-                    new ExpenseCategoryResponse(expenseCategoryService.findExpenseCategoryById(id))
+                    new ExpenseCategoryResponse(expenseCategory)
             );
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<Void> delete(
             @PathVariable Long id,
-            @RequestParam(required = false, defaultValue = "false") Boolean hard_delete
+            @RequestParam(required = false, defaultValue = "false") Boolean hardDelete
     ){
-        expenseCategoryService.delete(id, hard_delete);
+        expenseCategoryService.delete(id, hardDelete);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
