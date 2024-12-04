@@ -134,11 +134,27 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public ReportResponse getTotalByMonthForAYear(String year) {
-        if (year == null){
-            year = String.valueOf(LocalDate.now().getYear());
+    public ReportResponse getTotalByMonthForAYear(String from, String to, Long expenseCategoryId) {
+
+        // check FROM
+        String safeFrom = Objects.requireNonNullElse(from, "");
+        if (safeFrom.isBlank()){
+            from =  LocalDate.now().getYear() + "-" + LocalDate.now().getMonthValue() + "-01";
         }
-        List<Object[]> expenses = expenseRepository.getMonthlyExpensesByYear(year);
+        Util.isValidDate(from);
+
+        // check TO
+        String safeTo = Objects.requireNonNullElse(to, "");
+        if (safeTo.isBlank()){
+            to = LocalDate.now().getYear() + "-" + LocalDate.now().getMonthValue() + "-" + LocalDate.now().getDayOfMonth();
+        }
+        Util.isValidDate(to);
+
+        List<Object[]> expenses;
+        if (expenseCategoryId != null)
+            expenses = expenseRepository.getMonthlyExpensesByYearByCategory(from, to, expenseCategoryId);
+        else
+            expenses = expenseRepository.getMonthlyExpensesByYear(from, to);
 
         return new ReportResponse(expenses.stream()
                 .collect(Collectors.toMap(

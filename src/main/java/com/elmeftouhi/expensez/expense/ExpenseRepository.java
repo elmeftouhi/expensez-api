@@ -24,34 +24,69 @@ public interface ExpenseRepository extends ListCrudRepository<Expense, Long> {
     List<Expense> findByExpenseCategory(ExpenseCategory expenseCategory);
 
     @Query(value = """
-    WITH months AS (
-        SELECT 1 AS month UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL
-        SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL
-        SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL
-        SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12
-    ),
-    filtered_expenses AS (
-        SELECT 
-            amount, 
-            EXTRACT(MONTH FROM date_expense) AS expense_month,
-            EXTRACT(YEAR FROM date_expense) AS expense_year
-        FROM expenses
-        WHERE deleted_at IS NULL
-    ),
-    monthly_sums AS (
-        SELECT 
-            m.month,
-            COALESCE(SUM(fe.amount), 0) AS total_amount
-        FROM months m
-        LEFT JOIN filtered_expenses fe
-        ON m.month = fe.expense_month AND fe.expense_year = CAST(:year AS NUMERIC)
-        GROUP BY m.month
-    )
-    SELECT 
-        month,
-        total_amount
-    FROM monthly_sums
-    ORDER BY month;
+            WITH months AS (
+                 SELECT 1 AS month UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL
+                 SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL
+                 SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL
+                 SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12
+             ),
+             filtered_expenses AS (
+                 SELECT
+                     amount,
+                     EXTRACT(MONTH FROM date_expense) AS expense_month,
+                     EXTRACT(YEAR FROM date_expense) AS expense_year
+                 FROM expenses
+                 WHERE deleted_at IS NULL
+                   AND date_expense BETWEEN CAST(:from AS DATE) AND CAST(:to AS DATE)
+             ),
+             monthly_sums AS (
+                 SELECT
+                     m.month,
+                     COALESCE(SUM(fe.amount), 0) AS total_amount
+                 FROM months m
+                 LEFT JOIN filtered_expenses fe
+                 ON m.month = fe.expense_month
+                 GROUP BY m.month
+             )
+             SELECT
+                 month,
+                 total_amount
+             FROM monthly_sums
+             ORDER BY month;
     """, nativeQuery = true)
-    List<Object[]> getMonthlyExpensesByYear(@Param("year") String year);
+    List<Object[]> getMonthlyExpensesByYear(@Param("from") String from, @Param("to") String to);
+
+    @Query(value = """
+            WITH months AS (
+                 SELECT 1 AS month UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL
+                 SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL
+                 SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL
+                 SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12
+             ),
+             filtered_expenses AS (
+                 SELECT
+                     amount,
+                     EXTRACT(MONTH FROM date_expense) AS expense_month,
+                     EXTRACT(YEAR FROM date_expense) AS expense_year
+                 FROM expenses
+                 WHERE deleted_at IS NULL
+                   AND date_expense BETWEEN CAST(:from AS DATE) AND CAST(:to AS DATE)
+                   AND category_id = :expenseCategoryId
+             ),
+             monthly_sums AS (
+                 SELECT
+                     m.month,
+                     COALESCE(SUM(fe.amount), 0) AS total_amount
+                 FROM months m
+                 LEFT JOIN filtered_expenses fe
+                 ON m.month = fe.expense_month
+                 GROUP BY m.month
+             )
+             SELECT
+                 month,
+                 total_amount
+             FROM monthly_sums
+             ORDER BY month;
+    """, nativeQuery = true)
+    List<Object[]> getMonthlyExpensesByYearByCategory(@Param("from") String from, @Param("to") String to, @Param("expenseCategoryId") Long expenseCategoryId);
 }

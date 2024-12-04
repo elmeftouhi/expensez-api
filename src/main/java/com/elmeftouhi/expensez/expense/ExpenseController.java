@@ -77,11 +77,11 @@ public class ExpenseController {
 
     @GetMapping("/report")
     public ReportResponse getReport(
-            @RequestParam(required = false, name = "year") String year,
-            @RequestParam(required = false, name = "month") String month,
+            @RequestParam(required = false, name = "from") String from,
+            @RequestParam(required = false, name = "to") String to,
             @RequestParam(required = false, name = "expense_category_id") Long expenseCategoryId
     ){
-        return expenseService.getTotalByMonthForAYear(year);
+        return expenseService.getTotalByMonthForAYear(from, to, expenseCategoryId);
 
     }
 }

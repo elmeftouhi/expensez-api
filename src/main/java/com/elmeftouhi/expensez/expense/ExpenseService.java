@@ -12,6 +12,6 @@ public interface ExpenseService {
 
     void save(ExpenseResource expenseResource);
 
-    ReportResponse getTotalByMonthForAYear(String year);
+    ReportResponse getTotalByMonthForAYear(String from, String to, Long expenseCategoryId);
 
 }

@@ -8,12 +8,9 @@ spring:
     username: user
     password: user_password
   jpa:
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
-        use_sql_comments: false
-        ddl-auto: update
+    show-sql: true
+    hibernate:
+      ddl-auto: update
 
 feature:
   use-mocks: false
