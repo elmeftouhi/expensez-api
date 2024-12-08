@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface ExpenseService {
 
-    List<ExpenseResponse> getAll(Boolean include_deleted, Boolean only_deleted, String description, Long expenseCategoryId, String from, String to);
+    List<ExpenseResponse> getAll(Boolean includeDeleted, Boolean onlyDeleted, String description, Long expenseCategoryId, String from, String to);
 
-    void deleteExpense(Long id, Boolean hard_delete);
+    void deleteExpense(Long id, Boolean hardDelete);
 
     void update(Long id, ExpenseResource expenseResource);
 
@@ -14,4 +14,5 @@ public interface ExpenseService {
 
     ReportResponse getTotalByMonthForAYear(String from, String to, Long expenseCategoryId);
 
+    void toggleTag(Long expenseId, Long tagId);
 }

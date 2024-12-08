@@ -6,7 +6,8 @@ import com.elmeftouhi.expensez.expensetag.TagResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record ExpenseResponse(
         Long id,
@@ -20,7 +21,7 @@ public record ExpenseResponse(
         Long updatedBy,
         LocalDateTime deletedAt,
         Long deletedBy,
-        List<TagResponse> tags
+        Set<TagResponse> tags
 ) {
 
     public ExpenseResponse(Expense expense) {
@@ -36,7 +37,7 @@ public record ExpenseResponse(
                 expense.getUpdatedBy(),
                 expense.getDeletedAt(),
                 expense.getDeletedBy(),
-                List.of()
+                expense.getTags().stream().map(TagResponse::new).collect(Collectors.toSet())
         );
     }
 

@@ -3,8 +3,11 @@ package com.elmeftouhi.expensez.expense;
 import com.elmeftouhi.expensez.common.util.Util;
 import com.elmeftouhi.expensez.exception.ExpenseCategoryNotFoundException;
 import com.elmeftouhi.expensez.exception.ExpenseNotFoundException;
+import com.elmeftouhi.expensez.exception.TagNotFoundException;
 import com.elmeftouhi.expensez.expensecategory.ExpenseCategory;
 import com.elmeftouhi.expensez.expensecategory.ExpenseCategoryRepository;
+import com.elmeftouhi.expensez.expensetag.Tag;
+import com.elmeftouhi.expensez.expensetag.TagRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,10 +23,12 @@ public class ExpenseServiceImpl implements ExpenseService{
 
     private final ExpenseRepository expenseRepository;
     private final ExpenseCategoryRepository expenseCategoryRepository;
+    private final TagRepository tagRepository;
 
-    public ExpenseServiceImpl(ExpenseRepository expenseRepository, ExpenseCategoryRepository expenseCategoryRepository) {
+    public ExpenseServiceImpl(ExpenseRepository expenseRepository, ExpenseCategoryRepository expenseCategoryRepository, TagRepository tagRepository) {
         this.expenseRepository = expenseRepository;
         this.expenseCategoryRepository = expenseCategoryRepository;
+        this.tagRepository = tagRepository;
     }
 
     @Override
@@ -81,10 +86,10 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public void deleteExpense(Long id, Boolean hard_delete) {
+    public void deleteExpense(Long id, Boolean hardDelete) {
         Optional<Expense> expense = expenseRepository.findById(id);
         if (expense.isPresent()){
-            if (hard_delete){
+            if (hardDelete){
                 expenseRepository.delete(expense.get());
             }else {
                 expense.get().setDeletedAt(LocalDateTime.now());
@@ -109,7 +114,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                 expenseCategory.ifPresent(category -> expense.get().setExpenseCategory(category));
             }
             expense.get().setUpdatedAt(LocalDateTime.now());
-            expense.get().setUpdatedBy(69);
+            expense.get().setUpdatedBy(69L);
             expenseRepository.save(expense.get());
         }else {
             throw new ExpenseNotFoundException("Expense not found");
@@ -161,6 +166,22 @@ public class ExpenseServiceImpl implements ExpenseService{
                         row -> ((Number) row[0]).intValue(),   // Month
                         row -> ((Number) row[1]).doubleValue() // Total Amount
                 )));
+    }
+
+    @Override
+    public void toggleTag(Long expenseId, Long tagId) {
+        Optional<Expense> expense = expenseRepository.findById(expenseId);
+        if (expense.isEmpty()){
+            throw new ExpenseNotFoundException("Expense not found");
+        }
+
+        Optional<Tag> tag = tagRepository.findById(tagId);
+        if (tag.isEmpty()){
+            throw new TagNotFoundException("Tag not found");
+        }
+
+
+
     }
 
 }

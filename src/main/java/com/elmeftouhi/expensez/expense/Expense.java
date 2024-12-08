@@ -1,17 +1,19 @@
 package com.elmeftouhi.expensez.expense;
 
+import com.elmeftouhi.expensez.core.jpa.BasicEntity;
 import com.elmeftouhi.expensez.expensecategory.ExpenseCategory;
+import com.elmeftouhi.expensez.expensetag.Tag;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "expenses")
-public class Expense {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Expense extends BasicEntity {
 
     private BigDecimal amount;
 
@@ -23,23 +25,20 @@ public class Expense {
 
     private LocalDate dateExpense;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Column(name = "created_by")
-    private long createdBy;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
-
-    @Column(name = "updated_by")
-    private long updatedBy;
-
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @Column(name = "deleted_by")
     private long deletedBy;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "tags_of_expense",
+            joinColumns = { @JoinColumn(name = "expense_id", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "tag_id", referencedColumnName = "id") }
+    )
+    @JsonManagedReference
+    private Set<Tag> tags = new HashSet<>();
 
     public Expense() {
     }
@@ -51,25 +50,13 @@ public class Expense {
         this.expenseCategory = expenseCategory;
     }
 
-    public Expense(BigDecimal amount, String description, ExpenseCategory expenseCategory, LocalDate date_expense, LocalDateTime createdAt, long createdBy, LocalDateTime updated_at, long updated_by, LocalDateTime deleted_at, long deleted_by) {
+    public Expense(BigDecimal amount, String description, ExpenseCategory expenseCategory, LocalDate dateExpense, LocalDateTime deletedAt, long deletedBy) {
         this.amount = amount;
         this.description = description;
         this.expenseCategory = expenseCategory;
-        this.dateExpense = date_expense;
-        this.createdAt = createdAt;
-        this.createdBy = createdBy;
-        this.updatedAt = updated_at;
-        this.updatedBy = updated_by;
-        this.deletedAt = deleted_at;
-        this.deletedBy = deleted_by;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        this.dateExpense = dateExpense;
+        this.deletedAt = deletedAt;
+        this.deletedBy = deletedBy;
     }
 
     public BigDecimal getAmount() {
@@ -96,44 +83,12 @@ public class Expense {
         this.expenseCategory = expenseCategory;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(long createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public LocalDate getDateExpense() {
         return dateExpense;
     }
 
     public void setDateExpense(LocalDate dateExpense) {
         this.dateExpense = dateExpense;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public long getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(long updatedBy) {
-        this.updatedBy = updatedBy;
     }
 
     public LocalDateTime getDeletedAt() {
@@ -150,5 +105,13 @@ public class Expense {
 
     public void setDeletedBy(long deletedBy) {
         this.deletedBy = deletedBy;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
     }
 }

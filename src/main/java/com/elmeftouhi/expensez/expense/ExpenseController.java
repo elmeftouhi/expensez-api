@@ -84,4 +84,12 @@ public class ExpenseController {
         return expenseService.getTotalByMonthForAYear(from, to, expenseCategoryId);
 
     }
+
+    @PutMapping("/{id}/tags/tagId")
+    public void tagToggle(
+            @PathVariable(required = true, name = "id") Long expenseId,
+            @PathVariable(required = true, name = "tagId") Long tagId
+        ){
+        expenseService.toggleTag(expenseId, tagId);
+    }
 }
