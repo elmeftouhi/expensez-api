@@ -1,36 +1,40 @@
 package com.elmeftouhi.expensez.expense;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static com.elmeftouhi.expensez.expense.ExpenseBuilder.anExpense;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class ExpenseServiceTest {
 
-    @MockBean
+    @Mock
     ExpenseRepository expenseRepository;
 
-    @MockBean
+    private final LocalDate DATE_FROM = LocalDate.now().minusMonths(1);
+    private final LocalDate DATE_TO = LocalDate.now();
+
+    @InjectMocks
     ExpenseServiceImpl expenseService;
 
     @Test
     void getAll() {
-        when(expenseRepository.findAll()).thenReturn(List.of(anExpense()));
+        when(expenseRepository.findAllBetweenDates(DATE_FROM, DATE_TO)).thenReturn(List.of(anExpense()));
 
         List<ExpenseResponse> expenseResponses = expenseService.getAll(
                 false,
                 false,
                 null,
                 null,
-                LocalDate.now().toString(),
-                ""
+                DATE_FROM.toString(),
+                DATE_TO.toString()
         );
 
         assertThat(expenseResponses).isNotNull().hasSize(1);

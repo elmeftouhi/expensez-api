@@ -1,0 +1,11 @@
+spring:
+  flyway:
+    enabled: true
+    locations:
+      - classpath:db/migrations/common
+      - classpath:db/h2
+  jpa:
+    properties:
+      hibernate:
+        default_schema: expensez
+        dialect: org.hibernate.dialect.H2Dialect

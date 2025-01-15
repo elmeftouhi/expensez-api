@@ -11,6 +11,9 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-
+  flyway:
+    enabled: false
+    default-schema: expensez
+    schema: expensez
 feature:
   use-mocks: false
